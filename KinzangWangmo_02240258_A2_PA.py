@@ -1,13 +1,11 @@
 import random
+import KinzangWangmo_02240258_A2_PB as pb
 
-class GameHub:
+class GuessNumberGame:
     def __init__(self):
-        self.guess_score = 0
-        self.rps_score = 0
-        self.trivia_score = 0
-        self.binder = []
+        self.score = 0
 
-    def guess_number_game(self):
+    def play(self):
         print("\nGuess the Number Game")
         number = random.randint(1, 10)
         tries = 0
@@ -16,28 +14,39 @@ class GameHub:
             try:
                 guess = int(input("Guess a number between 1 and 10: "))
                 tries += 1
-                if guess == number:
-                    print("Correct! You guessed it.")
-                    break
+                if 1 <= guess <= 10:
+                    if guess == number:
+                        print("Correct! You guessed it.")
+                        break
+                    else:
+                        print("Wrong guess. Try again.")
                 else:
-                    print("Wrong guess. Try again.")
+                    print("Please guess a number within the range 1 to 10.")
             except ValueError:
-                print("Please enter a valid number.")
-        
+                print("Invalid input. Please enter a valid integer.")
+            except KeyboardInterrupt:
+                print("\nGame interrupted. Returning to the main menu.")
+                return
+
         score = max(0, 10 - tries)
-        self.guess_score += score
+        self.score += score
         print("You scored:", score)
 
-    def rock_paper_scissors_game(self):
+
+class RockPaperScissorsGame:
+    def __init__(self):
+        self.score = 0
+
+    def play(self):
         print("\nRock Paper Scissors Game")
         options = ["rock", "paper", "scissors"]
         computer = random.choice(options)
-        
+
         user = input("Choose rock, paper or scissors: ").lower()
         if user not in options:
             print("Invalid choice.")
             return
-        
+
         print("Computer chose:", computer)
         if user == computer:
             print("It's a tie.")
@@ -45,11 +54,16 @@ class GameHub:
              (user == "paper" and computer == "rock") or \
              (user == "scissors" and computer == "paper"):
             print("You win!")
-            self.rps_score += 1
+            self.score += 1
         else:
             print("You lose.")
 
-    def trivia_game(self):
+
+class TriviaGame:
+    def __init__(self):
+        self.score = 0
+
+    def play(self):
         print("\nTrivia Game")
 
         print("Question 1: What is the capital of France?")
@@ -57,7 +71,7 @@ class GameHub:
         answer1 = input("Your answer: ")
         if answer1 == "3":
             print("Correct.")
-            self.trivia_score += 1
+            self.score += 1
         else:
             print("Incorrect.")
 
@@ -66,43 +80,50 @@ class GameHub:
         answer2 = input("Your answer: ")
         if answer2 == "2":
             print("Correct.")
-            self.trivia_score += 1
+            self.score += 1
         else:
             print("Incorrect.")
 
-    def pokemon_binder_manager(self):
-        while True:
-            print("\nPokemon Binder Manager")
-            print("1. Add card")
-            print("2. Reset binder")
-            print("3. View binder")
-            print("4. Go back to main menu")
 
-            choice = input("Enter choice: ")
+class PokemonBinderManagerWrapper:
+    def __init__(self):
+        self.binder_manager = pb.BinderManager()
+
+    def manage(self):
+        print("\n--- Pokemon Card Binder Manager ---")
+        while True:
+            print("\nMenu:")
+            print("1. Add a Pokemon card")
+            print("2. Reset the binder")
+            print("3. View current placements")
+            print("4. Exit")
+            choice = input("Enter your choice (1-4): ")
+
             if choice == "1":
-                name = input("Enter card name: ")
-                self.binder.append(name)
-                print("Card added.")
+                self.binder_manager.add_card()
             elif choice == "2":
-                self.binder.clear()
-                print("Binder reset.")
+                self.binder_manager.reset_binder()
             elif choice == "3":
-                if not self.binder:
-                    print("Binder is empty.")
-                else:
-                    print("Cards in binder:")
-                    for card in self.binder:
-                        print("-", card)
+                self.binder_manager.view_binder()
             elif choice == "4":
+                print("Exiting Pokemon Card Binder Manager. Returning to main menu.")
                 break
             else:
-                print("Invalid option.")
+                print("Invalid choice. Please enter a number between 1 and 4.")
+
+
+class GameHub:
+    def __init__(self):
+        self.guess_game = GuessNumberGame()
+        self.rps_game = RockPaperScissorsGame()
+        self.trivia_game = TriviaGame()
+        self.binder_manager = PokemonBinderManagerWrapper()
 
     def show_scores(self):
         print("\nOverall Scores")
-        print("Guess Number Game:", self.guess_score)
-        print("Rock Paper Scissors:", self.rps_score)
-        print("Trivia Game:", self.trivia_score)
+        print("Guess Number Game:", self.guess_game.score)
+        print("Rock Paper Scissors:", self.rps_game.score)
+        print("Trivia Game:", self.trivia_game.score)
 
     def main_menu(self):
         while True:
@@ -117,13 +138,13 @@ class GameHub:
             choice = input("Enter your choice (0-5): ")
 
             if choice == "1":
-                self.guess_number_game()
+                self.guess_game.play()
             elif choice == "2":
-                self.rock_paper_scissors_game()
+                self.rps_game.play()
             elif choice == "3":
-                self.trivia_game()
+                self.trivia_game.play()
             elif choice == "4":
-                self.pokemon_binder_manager()
+                self.binder_manager.manage()
             elif choice == "5":
                 self.show_scores()
             elif choice == "0":
@@ -132,7 +153,7 @@ class GameHub:
             else:
                 print("Invalid choice. Please enter a number from 0 to 5.")
 
-# Run the program
+
 if __name__ == "__main__":
     hub = GameHub()
     hub.main_menu()
